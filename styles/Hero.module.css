@@ -1,0 +1,31 @@
+.hero{
+  padding: 72px 16px 24px;
+  background: transparent; /* <— koristi body gradient; nema više okvira */
+}
+
+.center{
+  max-width: 1180px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.center h1{
+  margin: 0;
+  font-size: 52px;
+  line-height: 1.1;
+  font-weight: 600;              /* tanji, ne bold */
+  color: var(--text-strong);
+  letter-spacing: -0.5px;        /* modern feel */
+}
+
+.subtitle{
+  margin-top: 12px;
+  font-size: 20px;
+  font-weight: 400;              /* tanak font za podnaslov */
+  color: var(--muted);
+}
+
+@media (max-width: 640px){
+  .center h1{ font-size: 34px; }
+  .subtitle{ font-size: 18px; }
+}
