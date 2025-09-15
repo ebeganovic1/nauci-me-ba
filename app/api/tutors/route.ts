@@ -1,0 +1,93 @@
+// app/api/tutors/route.ts
+import { NextResponse } from 'next/server';
+
+const DUMMY_TUTORS = [
+  {
+    id: 'marko-petrovic-223',
+    name: "Marko Petrović",
+    title: "Matematika · PMF",
+    city: "Sarajevo",
+    years: 5,
+    rating: 4.9,
+    reviews: 32,
+    tags: ["Algebra", "Geometrija", "Analiza"],
+    price: 25,
+    avatar: "/avatars/marko.jpg",
+  },
+  {
+    id: 'ana-jovanovic-121',
+    name: "Ana Jovanović",
+    title: "Programiranje · ETF",
+    city: "Sarajevo",
+    years: 3,
+    rating: 4.8,
+    reviews: 28,
+    tags: ["Python", "Java", "C++"],
+    price: 30,
+    avatar: "/avatars/ana.jpg",
+  },
+  {
+    id: 'stefan-nikolic-314',
+    name: "Stefan Nikolić",
+    title: "Fizika · PMF",
+    city: "Sarajevo",
+    years: 4,
+    rating: 4.7,
+    reviews: 24,
+    tags: ["Mehanika", "Termodinamika", "Optika"],
+    price: 22,
+    avatar: "/avatars/stefan.jpg",
+  },
+  {
+    id: 'bilal-jovic-441',
+    name: "Bilal Jović",
+    title: "Razvoj softvera · IUS",
+    city: "Sarajevo",
+    years: 2,
+    rating: 5.0,
+    reviews: 15,
+    tags: ["Web", "Baze", "Algoritmi"],
+    price: 35,
+    avatar: "/avatars/bilal.jpg",
+  },
+  {
+    id: 'ivana-kovac-512',
+    name: "Ivana Kovač",
+    title: "Engleski jezik · Filozofski",
+    city: "Sarajevo",
+    years: 7,
+    rating: 4.9,
+    reviews: 45,
+    tags: ["Gramatika", "Konverzacija", "Testovi"],
+    price: 20,
+    avatar: "/avatars/ivana.jpg",
+  },
+  {
+    id: 'nikola-simic-625',
+    name: "Nikola Simić",
+    title: "Statistika · Ekonomski",
+    city: "Sarajevo",
+    years: 6,
+    rating: 4.6,
+    reviews: 18,
+    tags: ["Ekonometrija", "Vjerojatnoća", "Analiza"],
+    price: 28,
+    avatar: "/avatars/nikola.jpg",
+  },
+  {
+    id: 'dzejla-halilovic-733',
+    name: "Džejla Halilović",
+    title: "Hemija · PMF",
+    city: "Sarajevo",
+    years: 3,
+    rating: 4.8,
+    reviews: 21,
+    tags: ["Opća hemija", "Organska hemija", "Biohemija"],
+    price: 24,
+    avatar: "/avatars/dzejla.jpg",
+  }
+];
+
+export async function GET() {
+  return NextResponse.json({ tutors: DUMMY_TUTORS });
+}

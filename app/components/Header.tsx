@@ -5,6 +5,7 @@ import styles from "@/styles/Header.module.css";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import Link from 'next/link'; // Dodajte import za Link komponentu
 
 const brandFont = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["600"] });
 
@@ -43,8 +44,13 @@ export default function Header() {
 
         {/* desno */}
         <div className={styles.right}>
-          <button className={styles.linkBtn}>Prijavi se</button>
-          <button className={styles.primaryBtn}>Registracija</button>
+          {/* Omotajte dugmad unutar Link komponente */}
+          <Link href="/login" passHref>
+            <button className={styles.linkBtn}>Prijavi se</button>
+          </Link>
+          <Link href="/register" passHref>
+            <button className={styles.primaryBtn}>Registracija</button>
+          </Link>
         </div>
       </div>
     </header>

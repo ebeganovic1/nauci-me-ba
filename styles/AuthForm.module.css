@@ -1,0 +1,115 @@
+/* styles/AuthForm.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 80px);
+  padding: 2rem;
+  background-color: var(--bg-bottom);
+}
+
+.formWrapper {
+  background-color: var(--card);
+  padding: 2.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+.logo {
+  margin-bottom: -0.5rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-strong);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.field label {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.field input {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--br);
+  font-size: 1rem;
+  color: var(--text);
+  background-color: #f7faff;
+  transition: all 0.2s ease;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(31, 181, 230, 0.2);
+}
+
+.submitBtn {
+  padding: 0.85rem;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+  width: 100%;
+}
+
+.submitBtn:hover {
+  background-color: var(--primary-600);
+}
+
+.message {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  color: var(--text-strong);
+}
+
+.message-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.message-error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.linkText {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.linkText a {
+  color: var(--primary);
+  font-weight: 600;
+}
