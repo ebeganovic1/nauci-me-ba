@@ -2,9 +2,11 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { notFound } from 'next/navigation';
-import styles from '@/styles/TutorDetails.module.css'; // Kreirajte ovaj CSS fajl
-import Image from 'next/image';
+import { notFound, useRouter } from 'next/navigation';
+import styles from '@/styles/TutorDetails.module.css';
+// ISPRAVNI IMPORTI - uklonite .css ekstenziju
+import ContactTutorModal from '../../components/ContactTutorModal';
+import RatingSystem from '../../components/RatingSystem';
 
 type Tutor = {
     id: string;
@@ -17,57 +19,147 @@ type Tutor = {
     tags: string[];
     price: number;
     avatar: string;
-    // Opciono: Dodatne informacije o tutoru
     bio: string;
     education: string[];
+};
+
+type Review = {
+    id: string;
+    userId: string;
+    userName: string;
+    rating: number;
+    comment: string;
+    date: string;
 };
 
 export default function TutorDetailsPage({ params }: { params: { tutorId: string } }) {
     const { tutorId } = params;
     const [tutor, setTutor] = useState<Tutor | null>(null);
+    const [reviews, setReviews] = useState<Review[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [showContactModal, setShowContactModal] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
-        const fetchTutor = async () => {
+        const fetchTutorData = async () => {
             setIsLoading(true);
+            setError(null);
             try {
-                const response = await fetch(`/api/tutors/${tutorId}`);
-                if (!response.ok) {
-                    if (response.status === 404) {
-                        notFound(); // Next.js funkcija za prikaz 404 stranice
+                // Učitaj podatke o tutoru
+                const tutorResponse = await fetch(`/api/tutors/${tutorId}`);
+                
+                if (!tutorResponse.ok) {
+                    if (tutorResponse.status === 404) {
+                        notFound();
                     }
-                    throw new Error('Failed to fetch tutor details');
+                    throw new Error(`HTTP error! status: ${tutorResponse.status}`);
                 }
-                const data = await response.json();
-                setTutor(data.tutor);
+                
+                const tutorData = await tutorResponse.json();
+                
+                if (tutorData.error) {
+                    setError(tutorData.error);
+                    return;
+                }
+                
+                setTutor(tutorData.tutor);
+
+                // Učitaj recenzije za tutora
+                const reviewsResponse = await fetch(`/api/reviews?tutorId=${tutorId}`);
+                if (reviewsResponse.ok) {
+                    const reviewsData = await reviewsResponse.json();
+                    setReviews(reviewsData.reviews || []);
+                }
             } catch (error) {
-                console.error("Greška pri dohvaćanju tutora:", error);
+                console.error("Greška pri dohvaćanju podataka:", error);
+                setError('Došlo je do greške pri učitavanju podataka.');
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchTutor();
+        if (tutorId) {
+            fetchTutorData();
+        }
     }, [tutorId]);
 
+    const handleAddReview = async (rating: number, comment: string) => {
+    try {
+        const response = await fetch('/api/reviews', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                tutorId,
+                rating,
+                comment,
+            }),
+        });
+        
+        if (response.ok) {
+            // Osveži recenzije
+            const reviewsResponse = await fetch(`/api/reviews?tutorId=${tutorId}`);
+            if (reviewsResponse.ok) {
+                const reviewsData = await reviewsResponse.json();
+                setReviews(reviewsData.reviews || []);
+            }
+            
+            // Osveži podatke o tutoru da se ažurira ocjena i broj recenzija
+            const tutorResponse = await fetch(`/api/tutors/${tutorId}`);
+            if (tutorResponse.ok) {
+                const tutorData = await tutorResponse.json();
+                setTutor(tutorData.tutor);
+            }
+            
+            alert('Recenzija je uspješno dodana!');
+        }
+    } catch (error) {
+        console.error('Greška pri dodavanju recenzije:', error);
+        alert('Došlo je do greške pri dodavanju recenzije.');
+    }
+};
+
     if (isLoading) {
-        return <div className={styles.container}><p>Učitavanje detalja tutora...</p></div>;
+        return (
+            <div className={styles.container}>
+                <div className={styles.loading}>
+                    <p>Učitavanje detalja tutora...</p>
+                </div>
+            </div>
+        );
     }
 
-    if (!tutor) {
-        return notFound(); // Prikaz 404 ako tutor ne postoji
+    if (error || !tutor) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.error}>
+                    <h2>Greška</h2>
+                    <p>{error || 'Tutor nije pronađen'}</p>
+                    <button onClick={() => router.back()} className={styles.backButton}>
+                        Nazad
+                    </button>
+                </div>
+            </div>
+        );
     }
 
     return (
         <div className={styles.container}>
             <div className={styles.profileHeader}>
-                <Image
-                    src={tutor.avatar}
-                    alt={`Profilna slika ${tutor.name}`}
-                    width={150}
-                    height={150}
-                    className={styles.profileAvatar}
-                />
+                <div className={styles.avatarContainer}>
+                    <div 
+                        className={styles.avatarPlaceholder}
+                        style={{ 
+                            backgroundColor: `hsl(${tutor.name.length * 30 % 360}, 70%, 60%)` 
+                        }}
+                    >
+                        <span className={styles.initials}>
+                            {tutor.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                        </span>
+                    </div>
+                </div>
                 <div className={styles.info}>
                     <h1 className={styles.name}>{tutor.name}</h1>
                     <p className={styles.title}>{tutor.title}</p>
@@ -83,11 +175,52 @@ export default function TutorDetailsPage({ params }: { params: { tutorId: string
                         <h2>O meni</h2>
                         <p>{tutor.bio}</p>
                     </div>
+                    
+                    <div className={styles.section}>
+                        <h2>Obrazovanje</h2>
+                        <ul className={styles.educationList}>
+                            {tutor.education.map((edu, index) => (
+                                <li key={index} className={styles.educationItem}>{edu}</li>
+                            ))}
+                        </ul>
+                    </div>
+                    
                     <div className={styles.section}>
                         <h2>Vještine i predmeti</h2>
                         <div className={styles.tags}>
-                            {tutor.tags.map(tag => <span key={tag} className={styles.tag}>{tag}</span>)}
+                            {tutor.tags.map(tag => (
+                                <span key={tag} className={styles.tag}>{tag}</span>
+                            ))}
                         </div>
+                    </div>
+
+                    <div className={styles.section}>
+                        <h2>Recenzije</h2>
+                        {reviews.length > 0 ? (
+                            <div className={styles.reviewsList}>
+                                {reviews.map((review) => (
+                                    <div key={review.id} className={styles.reviewItem}>
+                                        <div className={styles.reviewHeader}>
+                                            <span className={styles.reviewAuthor}>{review.userName}</span>
+                                            <div className={styles.reviewRating}>
+                                                {[...Array(5)].map((_, i) => (
+                                                    <span 
+                                                        key={i} 
+                                                        className={i < review.rating ? styles.filledStar : styles.emptyStar}
+                                                    >
+                                                        ★
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <p className={styles.reviewComment}>{review.comment}</p>
+                                        <span className={styles.reviewDate}>{review.date}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p>Još nema recenzija za ovog tutora.</p>
+                        )}
                     </div>
                 </div>
 
@@ -95,16 +228,42 @@ export default function TutorDetailsPage({ params }: { params: { tutorId: string
                     <div className={styles.priceCard}>
                         <h3>Cijena</h3>
                         <p className={styles.priceAmount}>{tutor.price} KM/čas</p>
-                        <button className={styles.contactBtn}>Kontaktiraj tutora</button>
+                        <button 
+                            onClick={() => setShowContactModal(true)}
+                            className={styles.contactBtn}
+                        >
+                            Kontaktiraj tutora
+                        </button>
                     </div>
+                    
                     <div className={styles.ratingCard}>
                         <h3>Ocjena</h3>
                         <div className={styles.ratingStars}>
-                            <span>★</span> <span>{tutor.rating}</span> ({tutor.reviews} recenzija)
+                            <span className={styles.starIcon}>★</span> 
+                            <span className={styles.ratingValue}>{tutor.rating}</span> 
+                            <span className={styles.reviewsCount}>({tutor.reviews} recenzija)</span>
                         </div>
+                    </div>
+
+                    <div className={styles.ratingSection}>
+                        <RatingSystem 
+                            tutorId={tutorId}
+                            currentRating={tutor.rating}
+                            reviewCount={tutor.reviews}
+                            onAddReview={handleAddReview}
+                        />
                     </div>
                 </aside>
             </div>
+
+            {showContactModal && (
+                <ContactTutorModal
+                    tutorId={tutorId}
+                    tutorName={tutor.name}
+                    isOpen={showContactModal}
+                    onClose={() => setShowContactModal(false)}
+                />
+            )}
         </div>
     );
 }

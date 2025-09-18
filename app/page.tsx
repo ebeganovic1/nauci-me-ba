@@ -35,8 +35,9 @@ export default function HomePage() {
         }
         const data = await response.json();
         
-        // Ograničite prikaz na prva tri tutora
-        setTutors(data.tutors.slice(0, 3)); 
+        // Sortiranje po ocjeni (od najviše prema najnižoj) i uzimanje prva 3
+        const sortedTutors = data.tutors.sort((a: Tutor, b: Tutor) => b.rating - a.rating);
+        setTutors(sortedTutors.slice(0, 3)); 
       } catch (error) {
         console.error("Greška pri dohvaćanju tutora:", error);
       } finally {

@@ -1,3 +1,4 @@
+// app/login/page.tsx - primjer korištenja
 "use client";
 
 import { useState } from 'react';
@@ -6,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { useAuth } from '../context/AuthContext';
 
 const brandFont = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["600"] });
 
@@ -14,33 +16,21 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('Prijava u toku...');
 
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        // Ne šaljemo ulogu pri prijavi, backend je provjerava
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-      setMessage(data.message);
-
-      if (response.ok) {
-        // Ovdje možete dobiti ulogu korisnika i preusmjeriti ga na različite stranice
-        setTimeout(() => {
-          router.push('/');
-        }, 1500);
-      }
-    } catch (error) {
-      console.error(error);
-      setMessage('Greška pri prijavi. Pokušajte ponovo.');
+    const success = await login(email, password);
+    
+    if (success) {
+      setMessage('Prijava uspješna!');
+      setTimeout(() => {
+        router.push('/');
+      }, 1500);
+    } else {
+      setMessage('Pogrešni podaci za prijavu');
     }
   };
 

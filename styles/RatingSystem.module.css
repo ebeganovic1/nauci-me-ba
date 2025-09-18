@@ -1,0 +1,108 @@
+/* styles/RatingSystem.module.css */
+.ratingSystem {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.currentRating {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.currentRating h3 {
+  margin: 0 0 0.5rem 0;
+  color: #1f2937;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 0.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.stars span {
+  font-size: 1.5rem;
+}
+
+.filled {
+  color: #f59e0b;
+}
+
+.empty {
+  color: #d1d5db;
+}
+
+.reviewForm h4 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+}
+
+.ratingInput {
+  margin-bottom: 1rem;
+}
+
+.ratingInput label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.starInput {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.starInput button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #d1d5db;
+  transition: color 0.2s;
+}
+
+.starInput button.selected {
+  color: #f59e0b;
+}
+
+.commentInput {
+  margin-bottom: 1rem;
+}
+
+.commentInput label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.commentInput textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.submitButton:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}

@@ -1,3 +1,4 @@
+// app/register/page.tsx - Ažurirana verzija
 "use client";
 
 import { useState } from 'react';
@@ -10,14 +11,33 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 const brandFont = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["600"] });
 
 export default function RegisterPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('student'); // Dodajte stanje za ulogu
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    fullName: '',
+    role: 'student', // student ili tutor
+    phone: '',
+  });
   const [message, setMessage] = useState('');
   const router = useRouter();
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (formData.password !== formData.confirmPassword) {
+      setMessage('Lozinke se ne podudaraju!');
+      return;
+    }
+    
     setMessage('Registracija u toku...');
 
     try {
@@ -26,8 +46,7 @@ export default function RegisterPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        // Pošaljite ulogu na backend
-        body: JSON.stringify({ email, password, role }),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
@@ -51,51 +70,95 @@ export default function RegisterPage() {
         <h1 className={`${styles.title} ${brandFont.className}`}>Registracija</h1>
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.field}>
+            <label htmlFor="fullName">Ime i prezime</label>
+            <input
+              id="fullName"
+              name="fullName"
+              type="text"
+              value={formData.fullName}
+              onChange={handleInputChange}
+              required
+              placeholder="Unesite vaše ime i prezime"
+            />
+          </div>
+          
+          <div className={styles.field}>
             <label htmlFor="email">Email</label>
             <input
               id="email"
+              name="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleInputChange}
               required
+              placeholder="Unesite vaš email"
             />
           </div>
+          
+          <div className={styles.field}>
+            <label htmlFor="phone">Broj telefona (opciono)</label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={handleInputChange}
+              placeholder="Unesite vaš broj telefona"
+            />
+          </div>
+          
           <div className={styles.field}>
             <label htmlFor="password">Lozinka</label>
             <input
               id="password"
+              name="password"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleInputChange}
               required
+              placeholder="Kreirajte lozinku"
             />
           </div>
-          {/* Dodajte izbor uloge */}
+          
           <div className={styles.field}>
-            <label>Želim se registrovati kao:</label>
+            <label htmlFor="confirmPassword">Potvrdite lozinku</label>
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+              required
+              placeholder="Ponovite lozinku"
+            />
+          </div>
+          
+          <div className={styles.field}>
+            <label>Registrujem se kao:</label>
             <div className={styles.radioGroup}>
               <label>
                 <input
                   type="radio"
                   name="role"
-                  value="tutor"
-                  checked={role === 'tutor'}
-                  onChange={() => setRole('tutor')}
+                  value="student"
+                  checked={formData.role === 'student'}
+                  onChange={handleInputChange}
                 />
-                Tutor
+                Učenik
               </label>
               <label>
                 <input
                   type="radio"
                   name="role"
-                  value="student"
-                  checked={role === 'student'}
-                  onChange={() => setRole('student')}
+                  value="tutor"
+                  checked={formData.role === 'tutor'}
+                  onChange={handleInputChange}
                 />
-                Učenik
+                Tutor
               </label>
             </div>
           </div>
+          
           <button type="submit" className={styles.submitBtn}>Registruj se</button>
         </form>
         {message && <p className={styles.message}>{message}</p>}
