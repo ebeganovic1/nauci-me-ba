@@ -48,18 +48,6 @@ export default function RatingSystem({ tutorId, currentRating, reviewCount, onAd
 
   return (
     <div className={styles.ratingSystem}>
-      <div className={styles.currentRating}>
-        <h3>Ocjena: {currentRating.toFixed(1)}</h3>
-        <div className={styles.stars}>
-          {[...Array(5)].map((_, i) => (
-            <span key={i} className={i < Math.floor(currentRating) ? styles.filled : styles.empty}>
-              ★
-            </span>
-          ))}
-        </div>
-        <p>({reviewCount} recenzija)</p>
-      </div>
-
       <form onSubmit={handleSubmit} className={styles.reviewForm}>
         <h4>Dodajte recenziju</h4>
         <div className={styles.ratingInput}>

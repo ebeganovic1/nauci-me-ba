@@ -84,42 +84,31 @@ export default function TutorDetailsPage({ params }: { params: { tutorId: string
         }
     }, [tutorId]);
 
-    const handleAddReview = async (rating: number, comment: string) => {
-    try {
-        const response = await fetch('/api/reviews', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                tutorId,
-                rating,
-                comment,
-            }),
-        });
+    // Novi, pojednostavljeni handler
+    const handleAddReview = async () => {
+        // Ponovno dohvati sve podatke nakon što je RatingSystem završio
+        // Nema potrebe za dupliciranjem POST poziva ovdje
+        // Umjesto toga, ponovno učitavamo podatke kako bi se UI ažurirao
+        await new Promise(resolve => setTimeout(resolve, 500)); // Dajte serveru malo vremena
         
-        if (response.ok) {
-            // Osveži recenzije
+        try {
             const reviewsResponse = await fetch(`/api/reviews?tutorId=${tutorId}`);
             if (reviewsResponse.ok) {
                 const reviewsData = await reviewsResponse.json();
                 setReviews(reviewsData.reviews || []);
             }
-            
-            // Osveži podatke o tutoru da se ažurira ocjena i broj recenzija
+
             const tutorResponse = await fetch(`/api/tutors/${tutorId}`);
             if (tutorResponse.ok) {
                 const tutorData = await tutorResponse.json();
                 setTutor(tutorData.tutor);
             }
-            
-            alert('Recenzija je uspješno dodana!');
+        } catch (error) {
+            console.error("Greška pri osvježavanju podataka:", error);
         }
-    } catch (error) {
-        console.error('Greška pri dodavanju recenzije:', error);
-        alert('Došlo je do greške pri dodavanju recenzije.');
-    }
-};
+        
+        alert('Recenzija je uspješno dodana!');
+    };
 
     if (isLoading) {
         return (
