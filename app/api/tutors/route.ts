@@ -183,45 +183,78 @@ const DUMMY_TUTORS = [
   }
 ];
 
+function toKey(s: string) {
+  return (s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '');
+}
+
+function mapFacultyLabelToKeyword(label: string) {
+  // UI šalje puni naziv, u title/education koristiš kratice/ključne riječi
+  const k = toKey(label);
+  if (k.includes('elektrotehnick')) return 'etf';
+  if (k.includes('prirodno') || k.includes('matematick')) return 'pmf';
+  if (k.includes('ekonom')) return 'ekonomski';
+  if (k.includes('filozof')) return 'filozofski';
+  if (k.includes('masinsk')) return 'mašinski';
+  if (k.includes('arhitekton')) return 'arhitektonski';
+  if (k.includes('pravni')) return 'pravni';
+  if (k.includes('medicinsk')) return 'medicinski';
+  return label;
+}
+
+function parseMinYears(label: string) {
+  // "3+ godine" -> 3
+  const m = (label || '').match(/(\d+)\s*\+/);
+  return m ? Number(m[1]) : 0;
+}
+
+function parseMinRating(label: string) {
+  // "5 zvjezdica" / "4+ zvjezdice" -> 5 / 4
+  const m = (label || '').match(/(\d+)/);
+  return m ? Number(m[1]) : 0;
+}
+
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
 
-  const faculty = searchParams.get('faculty');
-  const subject = searchParams.get('subject');
-  const helpType = searchParams.get('helpType');
-  const price = searchParams.get('price');
-  const studyYear = searchParams.get('studyYear');
-  const instructorRating = searchParams.get('instructorRating');
-  const experience = searchParams.get('experience');
-  const city = searchParams.get('city');
+  const faculty = searchParams.get('faculty');        // "Elektrotehnički fakultet"
+  const subject = searchParams.get('subject');        // "Fizika", "Programiranje"...
+  const helpType = searchParams.get('helpType');      // "Priprema za ispit"...
+  const price = searchParams.get('price');            // max cijena (slider)
+  const studyYear = searchParams.get('studyYear');    // (trenutno ne koristimo)
+  const instructorRating = searchParams.get('instructorRating'); // "4+ zvjezdice"
+  const experience = searchParams.get('experience');  // "3+ godine"
+  const city = searchParams.get('city');              // "Sarajevo"...
 
-  let filteredTutors = DUMMY_TUTORS;
+  const qFacultyKey = faculty ? toKey(mapFacultyLabelToKeyword(faculty)) : '';
+  const qSubject = toKey(subject || '');
+  const qHelp = toKey(helpType || '');
+  const qCity = toKey(city || '');
 
-  // Primjena filtera
-  if (faculty) {
-    filteredTutors = filteredTutors.filter(tutor => tutor.title.includes(faculty));
-  }
-  if (subject) {
-    filteredTutors = filteredTutors.filter(tutor => tutor.tags.includes(subject));
-  }
-  if (helpType) {
-    filteredTutors = filteredTutors.filter(tutor => tutor.tags.includes(helpType));
-  }
-  if (price) {
-    filteredTutors = filteredTutors.filter(tutor => tutor.price <= Number(price));
-  }
-  if (city) {
-    filteredTutors = filteredTutors.filter(tutor => tutor.city === city);
-  }
-  if (experience) {
-    const minExperience = Number(experience.replace('+', ''));
-    filteredTutors = filteredTutors.filter(tutor => tutor.years >= minExperience);
-  }
-  if (instructorRating) {
-    const minRating = Number(instructorRating.replace(/\+? zvjezdic(e|a)/, ''));
-    filteredTutors = filteredTutors.filter(tutor => tutor.rating >= minRating);
-  }
-  // Godina studija je trenutno nedostupna u DUMMY_TUTORS podacima, ali kôd je spreman za nju.
+  const maxPrice = price ? Number(price) : Number.MAX_SAFE_INTEGER;
+  const minYears = parseMinYears(experience || '');
+  const minRating = parseMinRating(instructorRating || '');
 
-  return NextResponse.json({ tutors: filteredTutors });
+  let filteredTutors = DUMMY_TUTORS.filter((tutor) => {
+    const titleN = toKey(tutor.title);
+    const tagsN = (tutor.tags || []).map(toKey);
+    const cityN = toKey(tutor.city);
+
+    const facultyMatch = qFacultyKey ? titleN.includes(qFacultyKey) : true;
+    const subjectMatch = qSubject
+      ? titleN.includes(qSubject) || tagsN.some(t => t.includes(qSubject))
+      : true;
+    const helpMatch = qHelp ? tagsN.some(t => t.includes(qHelp)) : true;
+    const cityMatch = qCity ? cityN.includes(qCity) : true;
+
+    const priceMatch = (tutor.price ?? 0) <= maxPrice;
+    const yearsMatch = (tutor.years ?? 0) >= minYears;
+    const ratingMatch = (tutor.rating ?? 0) >= minRating;
+
+    return facultyMatch && subjectMatch && helpMatch && cityMatch && priceMatch && yearsMatch && ratingMatch;
+  });
+
+  return NextResponse.json({ tutors: filteredTutors });
 }

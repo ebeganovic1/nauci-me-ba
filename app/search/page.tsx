@@ -1,13 +1,11 @@
-//search/
-
+// app/search/page.tsx
 "use client";
 
 import { useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import TutorCard from '../components/TutorCard';
 import styles from '@/styles/Home.module.css';
 
-// ... (Tip Tutor je isti kao i u page.tsx)
 type Tutor = {
   id: string;
   name: string;
@@ -22,46 +20,26 @@ type Tutor = {
 };
 
 export default function SearchPage() {
-  const searchParams = useSearchParams();
-  const [filteredTutors, setFilteredTutors] = useState<Tutor[]>([]);
+  const sp = useSearchParams();
+  const [tutors, setTutors] = useState<Tutor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchAndFilter() {
-      setIsLoading(true);
-      try {
-        const response = await fetch('/api/tutors');
-        if (!response.ok) {
-          throw new Error('Failed to fetch tutors');
-        }
-        const data = await response.json();
-        
-        const faculty = searchParams.get('faculty');
-        const subject = searchParams.get('subject');
-        const price = searchParams.get('price');
+  const apiUrl = useMemo(() => {
+    const qs = sp.toString();
+    return `/api/tutors${qs ? `?${qs}` : ''}`;
+    // npr. /api/tutors?faculty=Elektrotehni%C4%8Dki%20fakultet&subject=Fizika&price=50&...
+  }, [sp]);
 
-        // Ako nema predefiniranih filtera, prikaži sve tutore
-        if (!faculty && !subject && !price) {
-          setFilteredTutors(data.tutors);
-        } else {
-          // Filtriraj ako postoje parametri pretrage
-          const filtered = data.tutors.filter((tutor: Tutor) => {
-            const facultyMatch = !faculty || (tutor.title.includes(faculty));
-            const subjectMatch = !subject || (tutor.tags.some(tag => tag.includes(subject)));
-            const priceMatch = !price || (tutor.price <= Number(price));
-  
-            return facultyMatch && subjectMatch && priceMatch;
-          });
-          setFilteredTutors(filtered);
-        }
-      } catch (error) {
-        console.error("Greška pri dohvaćanju i filtriranju tutora:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchAndFilter();
-  }, [searchParams]);
+  useEffect(() => {
+    let abort = false;
+    setIsLoading(true);
+    fetch(apiUrl)
+      .then(r => r.json())
+      .then(d => { if (!abort) setTutors(d.tutors || []); })
+      .catch(() => { if (!abort) setTutors([]); })
+      .finally(() => { if (!abort) setIsLoading(false); });
+    return () => { abort = true; };
+  }, [apiUrl]);
 
   return (
     <main className={styles.main}>
@@ -69,9 +47,9 @@ export default function SearchPage() {
         <h2 className={styles.title}>Rezultati pretrage</h2>
         {isLoading ? (
           <p>Učitavanje...</p>
-        ) : filteredTutors.length > 0 ? (
+        ) : tutors.length > 0 ? (
           <div className={styles.cardsGrid}>
-            {filteredTutors.map((tutor) => (
+            {tutors.map((tutor) => (
               <TutorCard key={tutor.id} {...tutor} />
             ))}
           </div>

@@ -69,6 +69,11 @@ export default function FiltersCard() {
             <option>Statistika</option>
             <option>Njemački</option>
             <option>Računovodstvo</option>
+            <option>Web</option>
+<option>Baze</option>
+<option>Algoritmi</option>
+<option>OOP</option>
+<option>Gramatika</option>
           </select>
         </div>
 
