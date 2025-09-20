@@ -19,9 +19,10 @@ export default function LoginPage() {
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMessage('Prijava u toku...');
+  e.preventDefault();
+  setMessage('Prijava u toku...');
 
+  try {
     const success = await login(email, password);
     
     if (success) {
@@ -30,10 +31,23 @@ export default function LoginPage() {
         router.push('/');
       }, 1500);
     } else {
-      setMessage('Pogrešni podaci za prijavu');
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        setMessage(errorData.message || 'Pogrešni podaci za prijavu');
+      } else {
+        setMessage('Pogrešni podaci za prijavu');
+      }
     }
-  };
-
+  } catch (error) {
+    setMessage('Greška pri prijavi. Pokušajte ponovo.');
+  }
+};
   return (
     <div className={styles.container}>
       <div className={styles.formWrapper}>

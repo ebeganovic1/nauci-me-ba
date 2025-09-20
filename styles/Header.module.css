@@ -178,3 +178,87 @@
     max-width: none;
   }
 }
+
+/* styles/Header.module.css - dodatak za dropdown */
+.dropdownContent {
+  min-width: 120px; /* Smanjite širinu ako je potrebno */
+}
+
+.dropdownContent a {
+  display: block;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: #1e293b;
+  transition: background-color 0.2s;
+}
+
+.dropdownContent a:hover {
+  background-color: #f1f5f9;
+}
+
+/* styles/Header.module.css - dodajte ove stilove */
+.search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.search input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.search input:focus {
+  outline: none;
+  border-color: #1fb5e6;
+  box-shadow: 0 0 0 3px rgba(31, 181, 230, 0.1);
+}
+
+.search input::placeholder {
+  color: #94a3b8;
+}
+
+.searchBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #1fb5e6 0%, #0ea5e9 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.searchBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(31, 181, 230, 0.3);
+}
+
+.searchText {
+  display: inline;
+}
+
+@media (max-width: 768px) {
+  .searchText {
+    display: none;
+  }
+  
+  .searchBtn {
+    padding: 0.75rem;
+  }
+  
+  .search input {
+    max-width: 200px;
+  }
+}

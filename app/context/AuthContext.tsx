@@ -26,12 +26,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Provera da li postoji sesija pri učitavanju
     const checkAuth = () => {
       try {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-          setUser(JSON.parse(userData));
+        // Provera samo na klijentskoj strani
+        if (typeof window !== 'undefined') {
+          const userData = localStorage.getItem('currentUser');
+          if (userData) {
+            setUser(JSON.parse(userData));
+          }
         }
       } catch (error) {
         console.error('Error checking auth session:', error);
@@ -45,18 +47,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      // Simulacija API poziva - u pravoj aplikaciji bi ovo bio fetch ka backendu
-      const mockUsers = [
-        { id: '1', email: 'student@example.com', password: 'password', fullName: 'Test Student', role: 'student' as const },
-        { id: '2', email: 'tutor@example.com', password: 'password', fullName: 'Test Tutor', role: 'tutor' as const },
-      ];
-      
-      const foundUser = mockUsers.find(u => u.email === email && u.password === password);
-      
-      if (foundUser) {
-        const { password: _, ...userWithoutPassword } = foundUser;
-        setUser(userWithoutPassword);
-        localStorage.setItem('user', JSON.stringify(userWithoutPassword));
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('currentUser', JSON.stringify(data.user));
+        }
         return true;
       }
       return false;
@@ -68,18 +72,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (userData: any): Promise<boolean> => {
     try {
-      // Simulacija registracije
-      const newUser = {
-        id: Date.now().toString(),
-        email: userData.email,
-        fullName: userData.fullName,
-        role: userData.role,
-        phone: userData.phone || '',
-      };
-      
-      setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
-      return true;
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('currentUser', JSON.stringify(data.user));
+        }
+        return true;
+      }
+      return false;
     } catch (error) {
       console.error('Registration error:', error);
       return false;
@@ -88,7 +97,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('currentUser');
+    }
   };
 
   return (

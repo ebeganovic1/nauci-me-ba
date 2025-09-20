@@ -18,7 +18,9 @@ export default function Header() {
 
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push(`/search?q=${encodeURIComponent(q)}`);
+    if (q.trim()) {
+      router.push(`/search?name=${encodeURIComponent(q.trim())}`);
+    }
   };
 
   const handleLogout = () => {
@@ -44,12 +46,14 @@ export default function Header() {
           <form className={styles.search} onSubmit={onSearch}>
             <input
               type="text"
-              placeholder="Pretraži instruktore..."
+              placeholder="Pretraži instruktore po imenu, prezimenu ili predmetu..."
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              aria-label="Pretraži"
+              aria-label="Pretraži instruktore"
             />
-            <button type="submit">Traži</button>
+            <button type="submit" className={styles.searchBtn}>
+              <span className={styles.searchText}>Traži</span>
+            </button>
           </form>
         </div>
 
@@ -65,12 +69,6 @@ export default function Header() {
                   </div>
                 </button>
                 <div className={styles.dropdownContent}>
-                  {user.role === 'tutor' && (
-                    <Link href="/tutor/dashboard">Moj dashboard</Link>
-                  )}
-                  {user.role === 'student' && (
-                    <Link href="/student/dashboard">Moj dashboard</Link>
-                  )}
                   <Link href="/profile">Moj profil</Link>
                   <button onClick={handleLogout} className={styles.logoutBtn}>
                     Odjava
