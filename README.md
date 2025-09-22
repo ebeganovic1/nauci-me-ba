@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎓 NauciMe.ba – Aplikacija za pronalazak i oglašavanje instrukcija
 
-## Getting Started
+NauciMe.ba je web platforma koja studentima omogućava brzo i jednostavno pronalaženje instruktora za različite predmete, dok tutorima pruža mogućnost oglašavanja svojih usluga i izgradnje reputacije kroz recenzije i ocjene.
 
-First, run the development server:
+## 🚀 Ključne funkcionalnosti
+- 🔎 **Pretraga i filtriranje** instruktora po predmetima, godini studija, lokaciji i cijeni
+- 📩 **Brzo kontaktiranje** instruktora putem integrisane komunikacije
+- ⭐ **Recenzije i ocjene** – studenti mogu ocjenjivati i ostavljati komentare nakon instrukcija
+- 📚 **Pregled po kategorijama** – lakša organizacija prema predmetima i oblastima
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 👥 Ciljna grupa
+- **Studenti** kojima je potrebna dodatna pomoć u učenju  
+- **Stariji studenti i diplomci** koji žele nuditi instrukcije i zaraditi dodatni prihod
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tehnologije
+- [Next.js](https://nextjs.org/) – frontend framework  
+- [TypeScript](https://www.typescriptlang.org/) – tipizacija i sigurniji razvoj  
+- [Tailwind CSS](https://tailwindcss.com/) – stilizacija aplikacije  
+- [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/) – backend API  
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚙️ Pokretanje projekta
+1. Kloniraj repozitorij:
+   ```bash
+   git clone https://github.com/username/tutorconnect.git
+   cd tutorconnect
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2.  Instaliraj zavisnosti:
+    ```bash
+    npm install
 
-## Learn More
+3. Pokreni razvojni server:
+    ```bash
+    npm run dev
 
-To learn more about Next.js, take a look at the following resources:
+4. Otvori http://localhost:3000 u browseru.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ✅ Indikatori uspješnosti
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    Broj prijavljenih korisnika
 
-## Deploy on Vercel
+    Broj održanih predavanja
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    Prosječne ocjene i recenzije instruktora
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 👨‍💻 Tim
+
+    Marko Petković
+
+    Bilal Đozo
+
+    Emin Beganović
