@@ -22,7 +22,7 @@ NauciMe.ba je web platforma koja studentima omogućava brzo i jednostavno pronal
 1. Kloniraj repozitorij:
    ```bash
    git clone https://github.com/username/tutorconnect.git
-   cd tutorconnect
+   cd nauci-me-ba
 
 2.  Instaliraj zavisnosti:
     ```bash
